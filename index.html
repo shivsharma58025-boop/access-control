@@ -60,26 +60,22 @@ function tr(a){return"<ul>"+a.map(function(x){return Array.isArray(x)?"<li class
 function ini(n){return n.split(/\s+/).slice(0,2).map(function(w){return w[0]}).join("").toUpperCase()}
 function draw(){var t=0;document.getElementById("g").innerHTML=D.map(function(m,i){var l=S[i]||[];t+=l.length;return"<div class=card style='--c:"+C[i%9]+"'><div class=hd><div class=num>"+(i+1)+"</div><h2 contenteditable=true>"+m[0]+"</h2><span class=cnt>"+cnt(m[1])+" items</span></div><div class=tree>"+tr(m[1])+"</div><div class=auth><b>Authorized employees ("+l.length+")</b><div class=chips>"+l.map(function(n,j){return"<span class=chip><em>"+esc(ini(n))+"</em>"+esc(n)+"<i onclick=\"rm("+i+","+j+")\">×</i></span>"}).join("")+"</div><form onsubmit=\"ad("+i+",event);return false\"><input name=employee placeholder='Add employee name' autocomplete=off><button type=submit>Add</button></form></div></div>"}).join("");
 document.getElementById("s1").textContent=D.length;document.getElementById("s2").textContent=D.reduce(function(n,m){return n+cnt(m[1])},0);document.getElementById("s3").textContent=t;flt()}
-function persistLocal(){try{localStorage.setItem("erp-access-names",JSON.stringify(S))}catch(e){}}
-function ad(i,event){event.preventDefault();var input=event.target.elements.employee;var v=input.value.trim();if(!v)return;(S[i]=S[i]||[]).push(v);persistLocal();draw();document.querySelectorAll(".auth input")[i].focus();psAdd(i,v)}
-function rm(i,j){var key=K[i]&&K[i][j];S[i].splice(j,1);if(K[i])K[i].splice(j,1);persistLocal();draw();if(DB&&key!==undefined&&key!==null)fetch(DB+"/auth/"+i+"/"+encodeURIComponent(key)+".json",{method:"DELETE"}).then(function(r){if(!r.ok)throw Error("Delete failed");ld(0)}).catch(function(){st("Sync failed",0)})}
+function ad(i,event){event.preventDefault();var input=event.target.elements.employee;var v=input.value.trim();if(!v)return;(S[i]=S[i]||[]).push(v);ps(i);draw();document.querySelectorAll(".auth input")[i].focus()}
+function rm(i,j){S[i].splice(j,1);ps(i);draw()}
 function tg(c){document.querySelectorAll(".tree li.g").forEach(function(e){e.classList.toggle("cl",!!c)})}
 function flt(){var q=document.getElementById("q").value.toLowerCase();document.querySelectorAll(".card").forEach(function(c){c.classList.toggle("hide",!!q&&c.textContent.toLowerCase().indexOf(q)<0)})}
 function sf(){document.getElementById("data").textContent=JSON.stringify(S);var b=new Blob(["<!DOCTYPE html>"+document.documentElement.outerHTML],{type:"text/html"});var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="ERP-Access-Authorization.html";a.click()}
-try{S=JSON.parse(localStorage.getItem("erp-access-names"))||S}catch(e){}
-var K={};draw();
+draw();
 
 /* ===== SHARED SYNC (Firebase Realtime Database) =====
    Paste your database URL below, e.g. "https://my-erp-default-rtdb.firebaseio.com" (no trailing slash) */
 var DB="";
 var lastJ=JSON.stringify(S);
 function st(t,ok){var e=document.getElementById("sync");if(e){e.textContent=t;e.style.color=ok?"#0f8f6b":"#c0392b"}}
-function wr(i,name){return fetch(DB+"/auth/"+i+".json",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(name)}).then(function(r){if(!r.ok)throw Error("Save failed");return r})}
-function psAdd(i,name){if(!DB){st("Local only: shared database not configured",0);return}wr(i,name).then(function(){return ld(0)}).catch(function(){st("Sync failed",0)})}
-function unpack(v){var names=[],keys=[];if(Array.isArray(v)){v.forEach(function(name,j){if(name){names.push(String(name));keys.push(String(j))}})}else if(v&&typeof v=="object"){Object.keys(v).forEach(function(key){if(v[key]){names.push(String(v[key]));keys.push(key)}})}return{names:names,keys:keys}}
-function ld(seed){if(!DB)return;fetch(DB+"/auth.json").then(function(r){if(!r.ok)throw Error("Load failed");return r.json()}).then(function(d){
- if(d===null&&seed){var writes=[];Object.keys(S).forEach(function(i){(S[i]||[]).forEach(function(name){writes.push(wr(i,name))})});return Promise.all(writes).then(function(){return ld(0)})}
- var n={},k={};D.forEach(function(m,i){var record=unpack(d&&d[i]);n[i]=record.names;k[i]=record.keys});
- var j=JSON.stringify(n);K=k;if(j!==lastJ&&!(document.activeElement&&document.activeElement.tagName=="INPUT"&&document.activeElement.value)){S=n;lastJ=j;persistLocal();draw()}st("Synced",1)}).catch(function(){st("Sync failed",0)})}
-if(DB){ld(1);setInterval(function(){ld(0)},8000)}else{st("Local only: shared database not configured",0)}
+function ps(i){if(!DB)return;fetch(DB+"/auth/"+i+".json",{method:"PUT",body:JSON.stringify(S[i]||[])}).then(function(){st("Synced",1);lastJ=JSON.stringify(S)}).catch(function(){st("Sync failed",0)})}
+function ld(seed){if(!DB)return;fetch(DB+"/auth.json").then(function(r){return r.json()}).then(function(d){
+ if(d===null&&seed){Object.keys(S).forEach(ps);st("Synced",1);return}
+ var n={};D.forEach(function(m,i){var v=d&&d[i];n[i]=v?(Array.isArray(v)?v:Object.values(v)).filter(Boolean):[]});
+ var j=JSON.stringify(n);if(j!==lastJ&&!(document.activeElement&&document.activeElement.tagName=="INPUT"&&document.activeElement.value)){S=n;lastJ=j;draw()}st("Synced",1)}).catch(function(){st("Sync failed",0)})}
+if(DB){ld(1);setInterval(function(){ld(0)},8000)}
 </script></body></html>
