@@ -1,38 +1,37 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ERP Module Structure &amp; Access Authorization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#eef3f1;--card:#fff;--tx:#10201a;--mu:#62736b;--bd:#dbe6e1;--chip:#e6f4ee;--ac:#0f8f6b}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 "Segoe UI",system-ui,Arial,sans-serif}
-header{background:linear-gradient(120deg,#063d30,#0f8f6b);color:#fff;padding:26px 28px 20px}
-header h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.3px}header p{margin:4px 0 0;opacity:.85}
-.stats{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}.st{background:rgba(255,255,255,.14);border-radius:10px;padding:8px 16px}.st b{display:block;font-size:22px}.st span{font-size:12px;opacity:.85}
-.tools{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 28px;display:flex;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--bd)}
-.tools input{flex:1;min-width:200px;border:1px solid var(--bd);border-radius:8px;padding:9px 12px;font-size:14px}
-button{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:9px 14px;cursor:pointer;font-size:13px;font-weight:600}button.o{background:#fff;color:var(--ac);border:1px solid var(--ac)}
-main{padding:22px 28px}.flow{display:flex;flex-direction:column;align-items:center}
-.root{background:#063d30;color:#fff;padding:10px 30px;border-radius:99px;font-weight:700;box-shadow:0 4px 14px #063d3033}
-.stem{width:2px;height:24px;background:#9bb8ac}
-.grid{width:100%;display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:18px;border-top:2px solid #9bb8ac;padding-top:22px;position:relative}
-.card{background:var(--card);border-radius:14px;box-shadow:0 2px 10px #0a2a2012;overflow:hidden;display:flex;flex-direction:column;border-top:5px solid var(--c)}
-.card.hide{display:none}
-.hd{padding:12px 14px 6px;display:flex;align-items:center;gap:10px}.num{background:var(--c);color:#fff;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-weight:700;font-size:13px}
-.hd h2{margin:0;font-size:16px;flex:1}.cnt{font-size:11px;color:var(--mu)}
-.tree{padding:4px 14px 12px;flex:1}.tree ul{list-style:none;margin:0;padding-left:16px;border-left:2px solid var(--bd)}.tree>ul{border:0;padding:0}
-.tree li{margin:3px 0;position:relative}.tree li>span{display:block;padding:2px 0 2px 8px}
-.tree li>span:before{content:"";position:absolute;left:-16px;top:.85em;width:12px;border-top:2px solid var(--bd)}.tree>ul>li>span:before{display:none}
-.tree li.g>span{font-weight:600;cursor:pointer}.tree li.g>span:after{content:" ▾";color:var(--c);font-size:11px}.tree li.g.cl>span:after{content:" ▸"}.tree li.g.cl>ul{display:none}
-.tree li:not(.g)>span{color:#41544b;font-size:13px}
-.auth{background:#f6faf8;border-top:1px dashed #b9cec5;padding:10px 14px}
-.auth b{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mu)}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.chip{background:var(--chip);border-radius:99px;padding:3px 6px 3px 4px;display:inline-flex;align-items:center;gap:6px;font-size:13px}
-.chip em{background:var(--c);color:#fff;font-style:normal;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700}
-.chip i{cursor:pointer;font-style:normal;color:var(--mu);padding:0 3px}
-.auth input{width:100%;border:1px solid var(--bd);border-radius:8px;padding:7px 10px;font-size:13px}
-.auth form{display:flex;gap:6px}.auth form input{min-width:0;flex:1}.auth form button{padding:7px 10px}
-[contenteditable]:focus{outline:2px solid var(--ac);border-radius:4px}
-footer{text-align:center;color:var(--mu);font-size:12px;padding:6px 0 26px}
-@media print{header,.tools{position:static}.tools,.auth input,.chip i,footer{display:none}.card{break-inside:avoid;box-shadow:none;border:1px solid var(--bd)}.grid{grid-template-columns:repeat(3,1fr)}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}main{padding:12px}}
+:root{--paper:#f5f1e8;--ink:#171714;--muted:#5c5b53;--line:#171714;--lime:#e8ff35;--pink:#ff78bd;--blue:#8497ff;--orange:#ff9b52;--mint:#78e6c3;--card:#fffdf7;--shadow:5px 5px 0 var(--ink)}
+*{box-sizing:border-box}body{margin:0;background-color:var(--paper);background-image:radial-gradient(#17171418 .8px,transparent .8px);background-size:14px 14px;color:var(--ink);font:16px/1.45 "Space Grotesk",sans-serif}
+header{position:relative;overflow:hidden;background:var(--blue);color:var(--ink);padding:24px 5vw 32px;border-bottom:3px solid var(--ink)}
+header:before{content:"TIMBERTRADERS / ACCESS DIVISION";position:relative;z-index:1;display:inline-block;padding:5px 9px;background:var(--pink);border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font:500 11px/1.2 "DM Mono",monospace}
+header:after{content:"ERP";position:absolute;right:5vw;top:18px;color:#fff4;font-size:240px;font-weight:700;line-height:1;transform:rotate(-8deg);pointer-events:none}
+header h1{position:relative;z-index:1;max-width:1050px;margin:24px 0 10px;font-size:64px;line-height:.98;font-weight:700;text-transform:uppercase}header p{position:relative;z-index:1;margin:12px 0 24px;font-size:16px;font-weight:500}
+.stats{position:relative;z-index:1;display:flex;gap:11px;flex-wrap:wrap}.st{min-width:145px;padding:10px 14px;background:var(--card);border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);transform:rotate(-1deg)}.st:nth-child(2){background:var(--lime);transform:rotate(1deg)}.st:nth-child(3){background:var(--pink);transform:rotate(-.5deg)}.st b{display:block;font-size:26px;line-height:1}.st span{display:block;margin-top:5px;font:500 10px/1.2 "DM Mono",monospace;text-transform:uppercase}
+.tools{position:sticky;top:0;z-index:5;display:flex;gap:9px;align-items:center;flex-wrap:wrap;padding:12px 5vw;background:var(--paper);border-bottom:3px solid var(--ink)}
+.tools input{flex:1;min-width:210px;height:43px;padding:0 13px;background:#fff;border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font:14px "Space Grotesk",sans-serif;outline:none}.tools input:focus{box-shadow:5px 5px 0 var(--blue)}
+.tools #sync{padding:6px 8px;background:var(--lime);border:2px solid var(--ink);font:500 10px/1.2 "DM Mono",monospace}
+button{min-height:43px;padding:0 13px;background:var(--card);color:var(--ink);border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font:700 13px "Space Grotesk",sans-serif;cursor:pointer;transition:transform .15s,box-shadow .15s}button:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink)}button.o{background:var(--card);color:var(--ink);border:2px solid var(--ink)}.tools button:last-of-type{background:var(--orange)}
+main{max-width:1600px;margin:auto;padding:34px 5vw 62px}.flow{display:flex;flex-direction:column;align-items:center;margin-bottom:22px}
+.root{padding:10px 22px;background:var(--lime);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);font-weight:700;text-transform:uppercase;transform:rotate(-1deg)}
+.stem{height:22px;border-left:3px solid var(--ink)}
+.grid{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:21px;position:relative}
+.card{--accent:var(--mint);min-width:0;overflow:hidden;display:flex;flex-direction:column;background:var(--card);border:3px solid var(--ink);box-shadow:var(--shadow);animation:pop .45s both}.card:nth-child(3n+1){--accent:var(--lime)}.card:nth-child(3n+2){--accent:var(--pink)}.card:nth-child(3n){--accent:var(--mint)}.card:nth-child(2){animation-delay:.05s}.card:nth-child(3){animation-delay:.1s}.card.hide{display:none}
+.hd{min-height:62px;padding:11px 13px;display:flex;align-items:center;gap:10px;background:var(--accent);border-bottom:3px solid var(--ink)}.num{flex:0 0 35px;width:35px;height:35px;display:grid;place-items:center;background:var(--c);border:2px solid var(--ink);color:var(--ink);font:700 14px "DM Mono",monospace;transform:rotate(-4deg)}
+.hd h2{flex:1;min-width:0;margin:0;font-size:19px;line-height:1.08;text-transform:uppercase}.cnt{padding:4px 7px;background:var(--card);border:1.5px solid var(--ink);font:500 10px/1.2 "DM Mono",monospace;white-space:nowrap}
+.tree{flex:1;padding:13px 17px 18px}.tree ul{list-style:none;margin:0;padding-left:15px;border-left:2px solid var(--ink)}.tree>ul{padding:0;border:0}.tree li{position:relative;margin:5px 0}.tree li>span{display:block;padding:2px 0 2px 9px}.tree li>span:before{content:"";position:absolute;left:-15px;top:.9em;width:11px;border-top:2px solid var(--ink)}.tree>ul>li>span:before{display:none}.tree li.g>span{font-weight:700;cursor:pointer}.tree li.g>span:after{content:"  −";font:500 13px "DM Mono",monospace}.tree li.g.cl>span:after{content:"  +"}.tree li.g.cl>ul{display:none}.tree li:not(.g)>span{font-size:14px}
+.auth{margin-top:auto;padding:12px 15px 15px;background:#f1eee4;border-top:3px solid var(--ink)}.auth b{display:inline-block;padding:4px 7px;background:var(--pink);border:1.5px solid var(--ink);font:500 10px/1.2 "DM Mono",monospace;text-transform:uppercase}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:11px 0 13px}.chip{display:inline-flex;align-items:center;gap:7px;padding:4px 7px 4px 4px;background:var(--lime);border:1.5px solid var(--ink);box-shadow:2px 2px 0 var(--ink);font-size:12px;font-weight:700}.chip:nth-child(2n){background:var(--blue)}.chip:nth-child(3n){background:var(--pink)}.chip em{width:22px;height:22px;display:grid;place-items:center;background:var(--ink);color:white;font:500 9px "DM Mono",monospace;font-style:normal}.chip i{padding:0 2px;color:var(--ink);font-size:16px;font-style:normal;line-height:1;cursor:pointer}
+.auth form{display:flex;gap:8px}.auth input{flex:1;min-width:0;height:40px;padding:0 10px;background:white;border:2px solid var(--ink);font:14px "Space Grotesk",sans-serif;outline:none}.auth input:focus{box-shadow:3px 3px 0 var(--blue)}.auth form button{min-height:40px;padding:0 12px;background:var(--orange)}
+[contenteditable]:focus{outline:3px dashed var(--ink);outline-offset:3px}
+footer{text-align:center;padding:14px 5vw;background:var(--ink);color:var(--lime);font:500 10px "DM Mono",monospace;text-transform:uppercase}
+@keyframes pop{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:650px){header{padding:22px 18px 26px}header:after{right:-24px;top:54px;font-size:150px;opacity:.5}header h1{max-width:580px;margin-top:22px;font-size:44px;line-height:1}header p{max-width:300px;font-size:14px}.st{min-width:calc(33.333% - 8px);flex:1;padding:9px}.st b{font-size:22px}.st span{font-size:9px}.tools{padding:10px 16px;gap:7px}.tools input{flex-basis:100%;min-width:100%}.tools button{flex:1;padding:0 8px;font-size:11px}main{padding:24px 16px 44px}.grid{grid-template-columns:minmax(0,1fr);gap:17px}.hd h2{font-size:18px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+@media print{header,.tools{position:static}.tools,.auth input,.auth form button,.chip i,footer{display:none}.card{break-inside:avoid;box-shadow:none;border:2px solid var(--ink)}.grid{grid-template-columns:repeat(3,1fr)}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}main{padding:12px}}
 </style></head><body>
 <header><h1 contenteditable="true">TimberTraders ERP — Module Structure &amp; Access Authorization</h1>
 <p contenteditable="true">Proposal for client review · Prepared by Satyam · Swift Strips</p>
