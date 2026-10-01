@@ -69,7 +69,7 @@ draw();
 
 /* ===== SHARED SYNC (Firebase Realtime Database) =====
    Paste your database URL below, e.g. "https://my-erp-default-rtdb.firebaseio.com" (no trailing slash) */
-var DB="";
+var DB="https://access-9e89a-default-rtdb.firebaseio.com";
 var lastJ=JSON.stringify(S);
 function st(t,ok){var e=document.getElementById("sync");if(e){e.textContent=t;e.style.color=ok?"#0f8f6b":"#c0392b"}}
 function ps(i){if(!DB)return;fetch(DB+"/auth/"+i+".json",{method:"PUT",body:JSON.stringify(S[i]||[])}).then(function(){st("Synced",1);lastJ=JSON.stringify(S)}).catch(function(){st("Sync failed",0)})}
