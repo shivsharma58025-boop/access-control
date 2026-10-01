@@ -29,7 +29,6 @@ main{padding:22px 28px}.flow{display:flex;flex-direction:column;align-items:cent
 .chip em{background:var(--c);color:#fff;font-style:normal;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700}
 .chip i{cursor:pointer;font-style:normal;color:var(--mu);padding:0 3px}
 .auth input{width:100%;border:1px solid var(--bd);border-radius:8px;padding:7px 10px;font-size:13px}
-.auth form{display:flex;gap:6px}.auth form input{min-width:0;flex:1}.auth form button{padding:7px 10px}
 [contenteditable]:focus{outline:2px solid var(--ac);border-radius:4px}
 footer{text-align:center;color:var(--mu);font-size:12px;padding:6px 0 26px}
 @media print{header,.tools{position:static}.tools,.auth input,.chip i,footer{display:none}.card{break-inside:avoid;box-shadow:none;border:1px solid var(--bd)}.grid{grid-template-columns:repeat(3,1fr)}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}main{padding:12px}}
@@ -58,9 +57,9 @@ function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
 function cnt(a){return a.reduce(function(n,x){return n+(Array.isArray(x)?cnt(x[1]):1)},0)}
 function tr(a){return"<ul>"+a.map(function(x){return Array.isArray(x)?"<li class=g><span onclick=\"this.parentNode.classList.toggle('cl')\">"+esc(x[0])+"</span>"+tr(x[1])+"</li>":"<li><span contenteditable=true>"+esc(x)+"</span></li>"}).join("")+"</ul>"}
 function ini(n){return n.split(/\s+/).slice(0,2).map(function(w){return w[0]}).join("").toUpperCase()}
-function draw(){var t=0;document.getElementById("g").innerHTML=D.map(function(m,i){var l=S[i]||[];t+=l.length;return"<div class=card style='--c:"+C[i%9]+"'><div class=hd><div class=num>"+(i+1)+"</div><h2 contenteditable=true>"+m[0]+"</h2><span class=cnt>"+cnt(m[1])+" items</span></div><div class=tree>"+tr(m[1])+"</div><div class=auth><b>Authorized employees ("+l.length+")</b><div class=chips>"+l.map(function(n,j){return"<span class=chip><em>"+esc(ini(n))+"</em>"+esc(n)+"<i onclick=\"rm("+i+","+j+")\">×</i></span>"}).join("")+"</div><form onsubmit=\"ad("+i+",event);return false\"><input name=employee placeholder='Add employee name' autocomplete=off><button type=submit>Add</button></form></div></div>"}).join("");
+function draw(){var t=0;document.getElementById("g").innerHTML=D.map(function(m,i){var l=S[i]||[];t+=l.length;return"<div class=card style='--c:"+C[i%9]+"'><div class=hd><div class=num>"+(i+1)+"</div><h2 contenteditable=true>"+m[0]+"</h2><span class=cnt>"+cnt(m[1])+" items</span></div><div class=tree>"+tr(m[1])+"</div><div class=auth><b>Authorized employees ("+l.length+")</b><div class=chips>"+l.map(function(n,j){return"<span class=chip><em>"+esc(ini(n))+"</em>"+esc(n)+"<i onclick=\"rm("+i+","+j+")\">×</i></span>"}).join("")+"</div><input placeholder='Add employee name + Enter' onkeydown=\"if(event.key=='Enter')ad("+i+",this)\"></div></div>"}).join("");
 document.getElementById("s1").textContent=D.length;document.getElementById("s2").textContent=D.reduce(function(n,m){return n+cnt(m[1])},0);document.getElementById("s3").textContent=t;flt()}
-function ad(i,event){event.preventDefault();var input=event.target.elements.employee;var v=input.value.trim();if(!v)return;(S[i]=S[i]||[]).push(v);ps(i);draw();document.querySelectorAll(".auth input")[i].focus()}
+function ad(i,e){var v=e.value.trim();if(!v)return;(S[i]=S[i]||[]).push(v);ps(i);draw();document.querySelectorAll(".auth input")[i].focus()}
 function rm(i,j){S[i].splice(j,1);ps(i);draw()}
 function tg(c){document.querySelectorAll(".tree li.g").forEach(function(e){e.classList.toggle("cl",!!c)})}
 function flt(){var q=document.getElementById("q").value.toLowerCase();document.querySelectorAll(".card").forEach(function(c){c.classList.toggle("hide",!!q&&c.textContent.toLowerCase().indexOf(q)<0)})}
